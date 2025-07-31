@@ -1,0 +1,54 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: filehost-postgres
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./filehost/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - '9090:9090'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: secret
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+    ports:
+      - '3000:3000'
+
+frontend:
+    build:
+      context: ./filehost-frontend
+      dockerfile: Dockerfile
+      args:
+        - API_KEY=${API_KEY}
+    environment:
+      - API_KEY=${API_KEY}
+    ports:
+      - "5174:5174"
+    env_file:
+      - ../.env       
+volumes:
+  postgres_data:
