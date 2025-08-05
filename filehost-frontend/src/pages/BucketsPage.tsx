@@ -67,6 +67,9 @@ const BucketsPage: React.FC = () => {
       </div>
     )
   }
+  const notify = () => {
+    toast('This is a simple toast message!');
+  };
 
   return (
     <div className="min-h-screen bg-secondary p-6">
@@ -74,6 +77,7 @@ const BucketsPage: React.FC = () => {
         <FolderIcon className="w-8 h-8 text-primary mr-2" />
         <h1 className="text-2xl font-bold text-primary">Buckets</h1>
       </header>
+    <button onClick={notify}>Show Toast</button> a
 
       <form onSubmit={handleCreateBucket} className="bg-card border border-border rounded-xl p-4 mb-6 space-y-4 shadow">
         <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
