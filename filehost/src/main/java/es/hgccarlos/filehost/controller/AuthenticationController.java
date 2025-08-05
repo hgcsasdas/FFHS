@@ -1,5 +1,6 @@
 package es.hgccarlos.filehost.controller;
 
+import es.hgccarlos.filehost.dto.GeneralErrorResponse;
 import es.hgccarlos.filehost.dto.JwtResponse;
 import es.hgccarlos.filehost.dto.LoginRequest;
 import es.hgccarlos.filehost.model.User;
@@ -11,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,16 +34,16 @@ public class AuthenticationController {
 
             String token = jwtService.generateToken(user.getUsername(), java.util.List.of(user.getRole()));
 
-            return ResponseEntity.ok(new JwtResponse(token));
+            return ResponseEntity.ok(new JwtResponse(token, ""));
         } catch (AuthenticationException e) {
             if (e instanceof BadCredentialsException) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("Credenciales inválidas"));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("", "Credenciales inválidas"));
             } else if (e instanceof DisabledException) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("Usuario deshabilitado"));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("","Usuario deshabilitado"));
             } else if (e instanceof LockedException) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("Usuario bloqueado"));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("","Usuario bloqueado"));
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JwtResponse("Error de autenticación: " + e.getMessage()));
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new JwtResponse("","Error de autenticación: " + e.getMessage()));
             }
         }
     }
@@ -59,24 +59,24 @@ public class AuthenticationController {
         }
 
         if (oldToken == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JwtResponse("Token no proporcionado"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new JwtResponse("","Token no proporcionado"));
         }
 
         try {
             username = jwtService.getUsernameFromToken(oldToken);
 
             if (!jwtService.isTokenSignatureValid(oldToken)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("Firma de token inválida"));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("","Firma de token inválida"));
             }
 
             User user = userService.getByUsername(username);
             if (user == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("Usuario no encontrado para el token"));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("","Usuario no encontrado para el token"));
             }
 
             String newToken = jwtService.generateToken(user.getUsername(), java.util.List.of(user.getRole()));
 
-            return ResponseEntity.ok(new JwtResponse(newToken));
+            return ResponseEntity.ok(new JwtResponse(newToken, ""));
 
         } catch (ExpiredJwtException e) {
             try {
@@ -85,16 +85,16 @@ public class AuthenticationController {
 
                 User user = userService.getByUsername(username);
                 if (user == null) {
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("Usuario no encontrado al refrescar token expirado"));
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("","Usuario no encontrado al refrescar token expirado"));
                 }
                 String newToken = jwtService.generateToken(user.getUsername(), java.util.List.of(user.getRole()));
-                return ResponseEntity.ok(new JwtResponse(newToken));
+                return ResponseEntity.ok(new JwtResponse(newToken, ""));
             } catch (Exception ex) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("Token expirado o inválido para refrescar: " + ex.getMessage()));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("","Token expirado o inválido para refrescar: " + ex.getMessage()));
             }
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("Token inválido para refrescar: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("","Token inválido para refrescar: " + e.getMessage()));
         }
     }
 }

@@ -20,8 +20,9 @@ api.interceptors.request.use(config => {
 
 api.interceptors.response.use(
   res => res,
-  async err => {
-    if (err.response?.status === 401 && !err.config._retry) {
+  async err => {  
+    if (err.response?.status === 401 && !err.config._retry && !err.config.url?.includes('/auth/login')
+    ) {
       err.config._retry = true;
       const { data } = await api.post(`/auth/refresh`, {}, { withCredentials: true });
       localStorage.setItem('token', data.token);
