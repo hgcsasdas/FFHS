@@ -25,6 +25,10 @@ import java.util.List;
 public class SecurityConfig {
    private final UserService userService;
 
+    @Value("${app.api.base.url:http://localhost:8080}")
+    private String backendUrl;
+
+
    public SecurityConfig(UserService userService) {
        this.userService = userService;
    }
@@ -76,24 +80,28 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
-                                           IpRateLimitFilter rateLimitFilter,
-                                           ApiKeyFilter apiKeyFilter,
-                                           JwtAuthFilter jwtAuthFilter
-    ) throws Exception {
+                                        IpRateLimitFilter rateLimitFilter,
+                                        ApiKeyFilter apiKeyFilter,
+                                        JwtAuthFilter jwtAuthFilter) throws Exception {
         http
-                .addFilterBefore(rateLimitFilter, BasicAuthenticationFilter.class)
-                .addFilterAfter(apiKeyFilter, BasicAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/api/buckets/**").hasRole("ADMIN")
-                        .requestMatchers("/api/files/**").authenticated()
-                        .requestMatchers("/actuator/**").hasRole("ADMIN")
-                        .anyRequest().permitAll()
+            .addFilterBefore(rateLimitFilter, BasicAuthenticationFilter.class)
+            .addFilterAfter(apiKeyFilter, BasicAuthenticationFilter.class)
+            .addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class)
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/auth/**").permitAll()
+                    .requestMatchers("/api/buckets/**").hasRole("ADMIN")
+                    .requestMatchers("/api/files/**").authenticated()
+                    .requestMatchers("/actuator/**").hasRole("ADMIN")
+                    .anyRequest().permitAll()
+            )
+            .headers(headers -> headers
+                .contentSecurityPolicy(csp -> csp
+                    .policyDirectives("default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'self' " + backendUrl)
                 )
-
-                .httpBasic(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable);
+                .contentTypeOptions(Customizer.withDefaults())
+            )
+            .httpBasic(Customizer.withDefaults())
+            .csrf(AbstractHttpConfigurer::disable);
 
         return http.build();
     }
