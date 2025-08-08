@@ -104,8 +104,6 @@ export function useUploadFile(): UseMutationResult<
                     formData,
                     { headers: { 'Content-Type': 'multipart/form-data' } }
                 )
-                console.log(resp);
-
                 return resp.data
             },
         }
