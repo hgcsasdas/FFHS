@@ -27,15 +27,18 @@ public class SecurityConfig {
 
     @Value("${app.api.base.url:http://localhost:8080}")
     private String backendUrl;
-
+    
+    @Value("${app.front.url:http://localhost:5173}")
+    private String frontUrl;
 
    public SecurityConfig(UserService userService) {
        this.userService = userService;
    }
+   
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOrigins(List.of("http://localhost:5173", frontUrl));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
