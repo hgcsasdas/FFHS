@@ -42,8 +42,8 @@ services:
       FILEENTITY_MAX_SIZE: ${MAX_FILE_SIZE_MB}
       APP_API_BASE_URL: ${SERVICE_URL_BACKEND}
 
-    ports:
-      - "8080:8080"
+    # ports:
+    #   - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
