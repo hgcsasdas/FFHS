@@ -6,6 +6,7 @@ import es.hgccarlos.filehost.service.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Value("${app.user}")
+    private String adminUsername;
+
+    @Value("${app.password}")
+    private String adminPassword;
 
     @Override
     public User createUser(String username, String rawPassword, String role) {
@@ -39,9 +46,8 @@ public class UserServiceImpl implements UserService {
 
     @PostConstruct
     public void createDefaultAdmin() {
-        if (!userRepository.existsByUsername("admin") && !userRepository.existsByUsername("user")) {
-            createUser("admin", "admin123", "ADMIN");
-            createUser("user", "user123", "USER");
+        if (!userRepository.existsByUsername(adminUsername)) {
+            createUser(adminUsername, adminPassword, "ADMIN");
         }
     }
 }
