@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,14 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     // ---- Create User ----
-    @Override
+
+    @Value("${app.user}")
+    private String adminUsername;
+
+    @Value("${app.password}")
+    private String adminPassword;
+
+  @Override
     public User createUser(String username, String rawPassword, String role) {
         if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Username already exists");
@@ -48,12 +56,8 @@ public class UserServiceImpl implements UserService {
 
     @PostConstruct
     public void createDefaultAdmin() {
-        
-        if (!userRepository.existsByUsername("admin")) {
-            createUser("admin", "admin123", "ADMIN");
-        }
-        if (!userRepository.existsByUsername("user")) {
-            createUser("user", "user123", "USER");
+        if (!userRepository.existsByUsername(adminUsername)) {
+            createUser(adminUsername, adminPassword, "ADMIN");
         }
         
     }

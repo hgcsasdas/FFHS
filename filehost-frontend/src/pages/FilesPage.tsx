@@ -24,7 +24,6 @@ import {
 
   X,
   Loader2,
-  Code,
 } from 'lucide-react'
 
 const isViewable = (mime: string) =>
