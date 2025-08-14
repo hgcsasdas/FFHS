@@ -40,6 +40,8 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
       FILEENTITY_MAX_SIZE: ${MAX_FILE_SIZE_MB}
+      APP_API_BASE_URL: ${VITE_API_BASE}
+
     ports:
       - "8080:8080"
     depends_on:

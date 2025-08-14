@@ -1,6 +1,5 @@
 package es.hgccarlos.filehost.controller;
 
-// import es.hgccarlos.filehost.dto.GeneralErrorResponse;
 import es.hgccarlos.filehost.dto.JwtResponse;
 import es.hgccarlos.filehost.dto.LoginRequest;
 import es.hgccarlos.filehost.model.User;
