@@ -97,17 +97,23 @@ const FilesPage: React.FC = () => {
 
     try {
       const response = await uploadSingle.mutateAsync({ bucketKey, file: selFile })
+      console.log(response);
+
       if (response.code === "201") {
+        toast.success(`"${selFile.name}" subido con éxito`)
         invalidateFilesQuery()
         refetch()
-        
+
         setSelFile(null);
-        (e.currentTarget as HTMLFormElement).reset()
-        toast.success(`"${selFile.name}" subido con éxito`)
+        // Doesn´t work | 
+        //              | 
+        //              v
+        // (e.currentTarget as HTMLFormElement).reset()
       } else {
         toast.error('Error al subir el archivo')
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error('Error al subir el archivo')
     }
   }
