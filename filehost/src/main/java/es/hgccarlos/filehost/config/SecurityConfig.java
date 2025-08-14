@@ -57,13 +57,13 @@ public class SecurityConfig {
                         .roles("ADMIN")
                         .build();
             }
-            var u = userService.getByUsername(username);
-            return org.springframework.security.core.userdetails.User
-                    .withUsername(u.getUsername())
-                    .password(u.getPassword())
-                    .roles(u.getRole())
-                    .disabled(!u.isEnabled())
-                    .build();
+                var u = userService.getByUsername(username);
+                return org.springframework.security.core.userdetails.User
+                        .withUsername(u.getUsername())
+                        .password(u.getPassword())
+                        .roles(u.getRole())
+                        .disabled(!u.isEnabled())
+                        .build();
         };
     }
 
@@ -89,6 +89,7 @@ public class SecurityConfig {
             .addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/auth/**").permitAll()
+                    .requestMatchers("/api/users/**").authenticated() 
                     .requestMatchers("/api/buckets/**").hasRole("ADMIN")
                     .requestMatchers("/api/files/**").authenticated()
                     .requestMatchers("/actuator/**").hasRole("ADMIN")
