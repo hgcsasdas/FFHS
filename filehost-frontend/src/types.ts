@@ -29,3 +29,12 @@ export interface ApiResponse<T = any> {
 export interface LoginResponse {
   token: string;
 }
+
+export type UserRole = 'ADMIN' | 'USER'
+
+export interface User {
+  id: string;
+  username: string;
+  password?: string;
+  role: UserRole;
+}

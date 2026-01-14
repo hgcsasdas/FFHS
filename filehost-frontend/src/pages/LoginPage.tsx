@@ -40,9 +40,10 @@ const LoginPage: React.FC = () => {
         </h2>
 
         <div className="space-y-2">
-          <label className="relative block">
+          <label htmlFor="username" className="relative block">
             <User className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
             <input
+              id="username"
               type="text"
               placeholder="Usuario"
               value={username}
@@ -52,9 +53,10 @@ const LoginPage: React.FC = () => {
             />
           </label>
 
-          <label className="relative block">
+          <label htmlFor="password" className="relative block">
             <Lock className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
             <input
+              id="password"
               type="password"
               placeholder="Contraseña"
               value={password}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useQueryClient } from '@tanstack/react-query'
+import { useAuth } from '../contexts/AuthProvider'
 import {
   useFiles,
   useUploadFile,
@@ -32,6 +33,7 @@ const isViewable = (mime: string) =>
 const FilesPage: React.FC = () => {
   const { bucketKey } = useParams<{ bucketKey: string }>()
   const queryClient = useQueryClient()
+  const { role } = useAuth()
 
   // --- QUERIES Y MUTATIONS ---
   const { data, isPending: loadingFiles, isError, error, refetch } = useFiles(bucketKey || '')
@@ -212,23 +214,25 @@ const FilesPage: React.FC = () => {
         <h1 className="text-2xl font-bold text-primary break-words">Archivos de {bucketKey}</h1>
       </header>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <UploadFormSingle
-          selFile={selFile}
-          setSelFile={setSelFile}
-          onSubmit={handleUploadFile}
-          loading={uploadSingle.isPending}
-        />
-        <UploadFormMany
-          selFiles={selFiles}
-          setSelFiles={setSelFiles}
-          onSubmit={handleUploadMany}
-          loading={uploadMany.isPending}
-          batchProg={batchProg}
-        />
-      </section>
+      {role === 'ADMIN' && (
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <UploadFormSingle
+            selFile={selFile}
+            setSelFile={setSelFile}
+            onSubmit={handleUploadFile}
+            loading={uploadSingle.isPending}
+          />
+          <UploadFormMany
+            selFiles={selFiles}
+            setSelFiles={setSelFiles}
+            onSubmit={handleUploadMany}
+            loading={uploadMany.isPending}
+            batchProg={batchProg}
+          />
+        </section>
+      )}
 
-      {files.length > 0 && (
+      {role === 'ADMIN' && files.length > 0 && (
         <div className="flex justify-start">
           {selIds.length > 0 && (
             <button
@@ -288,9 +292,11 @@ const FilesPage: React.FC = () => {
                   <button onClick={() => handleDownload(f)}>
                     <Download size={18} className="text-primary hover:text-primary/80" />
                   </button>
-                  <button onClick={() => handleDelete([f.id])}>
-                    <Trash2 size={18} className="text-destructive hover:text-destructive/80" />
-                  </button>
+                  {role === 'ADMIN' && (
+                    <button onClick={() => handleDelete([f.id])}>
+                      <Trash2 size={18} className="text-destructive hover:text-destructive/80" />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
