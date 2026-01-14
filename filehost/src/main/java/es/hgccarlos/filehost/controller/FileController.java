@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,12 +26,14 @@ public class FileController {
 
     /** Single upload */
     @PostMapping("/upload")
+    @PreAuthorize("hasRole('ADMIN')")
     public Response upload(@RequestParam("bucketKey") String bucketKey, @RequestParam("file") MultipartFile file) {
         return service.uploadFile(file, bucketKey);
     }
 
     /** Multi upload */
     @PostMapping("/upload-many")
+    @PreAuthorize("hasRole('ADMIN')")
     public Response uploadMany( @RequestParam("bucketKey") String bucketKey,
                                @RequestParam("files") MultipartFile[] files) {
         return service.uploadFiles(files, bucketKey);
@@ -38,11 +41,13 @@ public class FileController {
 
     /** Delete */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Response delete(@RequestHeader("bucketKey") String bucketKey, @PathVariable Long id) {
         return service.deleteFile(id, bucketKey);
     }
 
     @DeleteMapping("/delete-many")
+    @PreAuthorize("hasRole('ADMIN')")
     public Response deleteMany (@RequestBody DeleteManyFilesRequest req) {
         return service.deleteFiles(req.getIds(), req.getBucketKey());
     }
