@@ -4,9 +4,11 @@ import { useAuth } from './contexts/AuthProvider'
 import LoginPage from './pages/LoginPage'
 import BucketsPage from './pages/BucketsPage'
 import FilesPage from './pages/FilesPage'
+import AdminPage from './pages/AdminPage'
 import type { JSX } from 'react/jsx-runtime'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import AdminRoute from './components/AdminRoute'
 
 const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
     const { token } = useAuth()
@@ -18,12 +20,11 @@ const App: React.FC = () => (
         <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-grow">
-
                 <Routes>
-                    {/* Públicas */}
+                    {/* Rutas Públicas */}
                     <Route path="/login" element={<LoginPage />} />
 
-                    {/* Privadas */}
+                    {/* Rutas Privadas */}
                     <Route
                         path="/buckets"
                         element={
@@ -38,6 +39,16 @@ const App: React.FC = () => (
                             <PrivateRoute>
                                 <FilesPage />
                             </PrivateRoute>
+                        }
+                    />
+
+                    {/* Ruta de Admin */}
+                    <Route
+                        path="/admin"
+                        element={
+                            <AdminRoute>
+                                <AdminPage />
+                            </AdminRoute>
                         }
                     />
 
